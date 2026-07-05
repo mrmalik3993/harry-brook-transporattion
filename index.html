@@ -318,9 +318,90 @@
     .marquee-track{animation:none;}
     html{scroll-behavior:auto;}
   }
+
+  /* ---------- CUSTOM CURSOR ---------- */
+  @media (hover:hover) and (pointer:fine){
+    body{cursor:none;}
+    a,button,.btn{cursor:none;}
+  }
+  #cursor-dot,#cursor-ring{
+    position:fixed;top:0;left:0;z-index:999;pointer-events:none;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+  #cursor-dot{
+    width:6px;height:6px;background:var(--amber);
+    transition:transform .12s ease, opacity .2s ease;
+  }
+  #cursor-ring{
+    width:34px;height:34px;border:1.5px solid rgba(255,163,36,.55);
+    transition:transform .18s ease, width .2s ease, height .2s ease, border-color .2s ease, background .2s ease;
+  }
+  #cursor-ring.hovering{
+    width:56px;height:56px;
+    background:rgba(255,163,36,.12);
+    border-color:var(--amber);
+  }
+  @media (hover:none), (pointer:coarse){
+    #cursor-dot,#cursor-ring{display:none;}
+  }
+
+  /* ---------- ANIMATED HERO TRUCK ---------- */
+  .road-run{
+    position:absolute;left:0;right:0;bottom:0;height:150px;z-index:1;
+    overflow:hidden;pointer-events:none;
+  }
+  .road-line{
+    position:absolute;bottom:36px;left:0;width:200%;height:4px;
+    background-image:repeating-linear-gradient(90deg, var(--amber) 0 40px, transparent 40px 80px);
+    opacity:.55;
+    animation:road-move 2.4s linear infinite;
+  }
+  .truck-run{
+    position:absolute;bottom:34px;left:-260px;
+    animation:truck-drive 9s linear infinite;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.5));
+  }
+  .truck-run .wheel{
+    animation:wheel-spin .5s linear infinite;
+    transform-origin:center;
+  }
+  @keyframes truck-drive{
+    from{left:-260px;}
+    to{left:110%;}
+  }
+  @keyframes road-move{
+    from{transform:translateX(0);}
+    to{transform:translateX(-80px);}
+  }
+  @keyframes wheel-spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .truck-run,.road-line{animation:none;}
+  }
+  @media (max-width:600px){
+    .truck-run{transform:scale(.7);}
+  }
+
+  /* ---------- ANIMATED STAT BARS (animated widths) ---------- */
+  .stat-bar-track{
+    margin-top:14px;height:4px;border-radius:2px;
+    background:rgba(255,255,255,.08);overflow:hidden;
+  }
+  .stat-bar-fill{
+    height:100%;width:0%;border-radius:2px;
+    background:linear-gradient(90deg,var(--amber-dim),var(--amber));
+    transition:width 1.6s cubic-bezier(.16,.8,.3,1);
+  }
+  .stat.in-view .stat-bar-fill{width:var(--target-width);}
 </style>
 </head>
 <body>
+
+<div id="cursor-ring"></div>
+<div id="cursor-dot"></div>
 
 <header>
   <nav>
@@ -355,6 +436,18 @@
   <!-- HERO -->
   <section class="hero" style="padding-bottom:0;">
     <div class="hero-bg"></div>
+    <div class="road-run">
+      <div class="road-line"></div>
+      <svg class="truck-run" width="130" height="58" viewBox="0 0 130 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 40V18a2 2 0 0 1 2-2h58a2 2 0 0 1 2 2v22" stroke="#ffa324" stroke-width="2.4"/>
+        <path d="M66 24h20l14 12v4" stroke="#ffa324" stroke-width="2.4" stroke-linejoin="round"/>
+        <rect x="4" y="34" width="96" height="8" fill="#ffa324" opacity=".18"/>
+        <circle class="wheel" cx="24" cy="44" r="8" stroke="#eef1f5" stroke-width="2.4"/>
+        <circle class="wheel" cx="88" cy="44" r="8" stroke="#eef1f5" stroke-width="2.4"/>
+        <circle cx="24" cy="44" r="2" fill="#eef1f5"/>
+        <circle cx="88" cy="44" r="2" fill="#eef1f5"/>
+      </svg>
+    </div>
     <div class="wrap hero-content">
       <div class="eyebrow">USA-Based Truck Dispatch Desk</div>
       <h1>Run the miles.<br>We run the <em>phones.</em></h1>
@@ -388,10 +481,10 @@
   <!-- STATS -->
   <section style="padding:0;">
     <div class="stats">
-      <div class="stat"><b>612+</b><span>Owner-Operators Dispatched</span></div>
-      <div class="stat"><b>48</b><span>States Covered Coast to Coast</span></div>
-      <div class="stat"><b>24/7</b><span>Live Dispatch Desk, No Bots</span></div>
-      <div class="stat"><b>97%</b><span>On-Time Pickup &amp; Delivery Rate</span></div>
+      <div class="stat" style="--target-width:82%"><b>612+</b><span>Owner-Operators Dispatched</span><div class="stat-bar-track"><div class="stat-bar-fill"></div></div></div>
+      <div class="stat" style="--target-width:96%"><b>48</b><span>States Covered Coast to Coast</span><div class="stat-bar-track"><div class="stat-bar-fill"></div></div></div>
+      <div class="stat" style="--target-width:100%"><b>24/7</b><span>Live Dispatch Desk, No Bots</span><div class="stat-bar-track"><div class="stat-bar-fill"></div></div></div>
+      <div class="stat" style="--target-width:97%"><b>97%</b><span>On-Time Pickup &amp; Delivery Rate</span><div class="stat-bar-track"><div class="stat-bar-fill"></div></div></div>
     </div>
   </section>
 
@@ -586,6 +679,7 @@
         <div class="eyebrow">Ready When You Are</div>
         <h2>Get back to driving. We'll handle the desk.</h2>
         <p>Onboarding takes about 15 minutes. Tell us your truck and your lanes, and we'll have your first load options within the day.</p>
+        <p style="color:var(--chrome-500);font-family:var(--font-mono);font-size:13px;margin-top:-14px;margin-bottom:26px;">118 Fulton Street, New York, NY 10038</p>
         <div class="cta-actions">
           <a href="tel:+18005551047" class="btn btn-amber">Call (800) 555-1047</a>
           <a href="mailto:dispatch@harrybrooktransport.com" class="btn btn-outline">Email Dispatch</a>
@@ -631,7 +725,8 @@
         <h4>Contact</h4>
         <p>(800) 555-1047</p>
         <p>dispatch@harrybrooktransport.com</p>
-        <p>Dallas, TX &middot; Serving all 48 states</p>
+        <p>118 Fulton Street, New York, NY 10038</p>
+        <p>Serving all 48 states</p>
       </div>
     </div>
     <div class="footer-bottom">
@@ -669,6 +764,39 @@
   }
   track.appendChild(buildSet());
   track.appendChild(buildSet());
+
+  // Custom cursor
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let ringX = 0, ringY = 0, mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+  });
+  function trailRing(){
+    ringX += (mouseX - ringX) * 0.18;
+    ringY += (mouseY - ringY) * 0.18;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(trailRing);
+  }
+  trailRing();
+  document.querySelectorAll('a, button, .btn, .service-card, .testi-card').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+
+  // Animated stat bar widths on scroll into view
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        statObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.stat').forEach(el => statObserver.observe(el));
 </script>
 
 </body>
